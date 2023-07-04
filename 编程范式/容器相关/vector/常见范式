@@ -1,0 +1,71 @@
+std::vector是C++中最常用的动态数组实现。以下是一些常见的使用std::vector的编程范式：
+
+初始化：可以使用列表初始化，也可以使用默认构造函数和assign函数。
+std::vector<int> vec1 = {1, 2, 3, 4, 5};  // 列表初始化
+std::vector<int> vec2(5, 10);  // 使用默认构造函数，创建一个大小为5，所有元素都是10的vector
+vec2.assign(3, 20);  // 使用assign函数，将vec2重新赋值为一个大小为3，所有元素都是20的vector
+添加和删除元素：使用push_back函数在尾部添加元素，使用pop_back函数删除尾部元素，使用insert和erase函数在任意位置添加或删除元素。
+vec1.push_back(6);  // 在vec1的尾部添加元素6
+vec1.pop_back();  // 删除vec1的尾部元素
+vec1.insert(vec1.begin() + 2, 7);  // 在vec1的第三个位置插入元素7
+vec1.erase(vec1.begin() + 2);  // 删除vec1的第三个元素
+遍历元素：可以使用基于范围的for循环，也可以使用迭代器。
+for (int i : vec1) {  // 基于范围的for循环
+    std::cout << i << " ";
+}
+for (std::vector<int>::iterator it = vec1.begin(); it != vec1.end(); ++it) {  // 使用迭代器
+    std::cout << *it << " ";
+}
+访问元素：可以使用下标操作符，也可以使用at函数。在知道vector不为空的情况下，还可以使用front和back函数访问首元素和尾元素。
+int first = vec1[0];  // 使用下标操作符
+int second = vec1.at(1);  // 使用at函数
+int first = vec1.front();  // 访问首元素
+int last = vec1.back();  // 访问尾元素
+检查vector是否为空：使用empty函数。
+if (vec1.empty()) {
+    std::cout << "vec1 is empty." << std::endl;
+}
+获取vector的大小：使用size函数。
+std::cout << "The size of vec1 is " << vec1.size() << std::endl;
+清空vector：使用clear函数。
+vec1.clear();
+
+--------
+
+std::vector 用迭代器遍历时执行删除操作
+当你在遍历std::vector时执行删除操作，需要谨慎对待，因为删除操作可能会导致迭代器失效。=
+下面是一个错误的例子：
+std::vector<int> vec = {1, 2, 3, 4, 5};
+for(auto it = vec.begin(); it != vec.end(); ++it) {
+    if(*it == 3)
+        vec.erase(it);
+}
+这段代码在删除元素后继续使用了可能已经失效的迭代器，这会导致未定义的行为。
+正确的做法是使用erase()函数的返回值更新迭代器，如下所示：
+std::vector<int> vec = {1, 2, 3, 4, 5};
+for(auto it = vec.begin(); it != vec.end(); ) {
+    if(*it == 3)
+        it = vec.erase(it);  // erase()返回值是指向下一个元素的迭代器
+    else
+        ++it;
+}
+在这种情况下，你可以安全地删除元素，而不会使迭代器失效。
+ 
+--------
+
+--------
+vector<int> nums; 
+nums.push_back(1);
+nums.push_back(1);
+nums.push_back(2);
+nums.push_back(2); 
+vector<int>().swap(nums);
+
+这行代码是用于清空一个int类型的vector（向量）nums并最小化它的容量。
+
+vector<int>()是一个临时的，空的int向量。.swap(nums)是一个成员函数，用于将这个临时向量与nums向量进行交换。
+
+由于临时向量在交换结束后被销毁，这就使得原来的nums向量现在是空的，并且它的容量被最小化。
+
+这是一种在C++中释放vector占用内存的有效方式。
+-------
