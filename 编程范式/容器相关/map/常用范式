@@ -1,0 +1,41 @@
+创建并插入元素
+std::map<std::string, int> map;
+map["apple"] = 1;
+map["banana"] = 2;
+遍历map
+for(auto it = map.begin(); it != map.end(); ++it) {
+    std::cout << it->first << ": " << it->second << std::endl;
+}
+或者
+
+for(auto& pair : map) {
+    std::cout << pair.first << ": " << pair.second << std::endl;
+}
+查找元素
+auto it = map.find("apple");
+if(it != map.end()) {
+    std::cout << "Found apple with value: " << it->second << std::endl;
+} else {
+    std::cout << "Did not find apple" << std::endl;
+}
+删除元素
+map.erase("apple");
+map的大小
+std::cout << "Size of map: " << map.size() << std::endl;
+检查map是否为空
+if(map.empty()) {
+    std::cout << "Map is empty" << std::endl;
+} else {
+    std::cout << "Map is not empty" << std::endl;
+}
+清空map
+map.clear();
+使用[]操作符访问元素，如果键不存在，将会创建它，并初始化为该类型的默认值
+std::cout << map["apple"] << std::endl;  // Outputs 0 if apple is not in the map
+使用at访问元素，如果键不存在，将会抛出一个异常
+try {
+    std::cout << map.at("apple") << std::endl;
+} catch(std::out_of_range& e) {
+    std::cout << "apple is not in the map" << std::endl;
+}
+

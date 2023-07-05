@@ -1,0 +1,40 @@
+在C++中，可以用以下几种方法从std::map中删除元素：
+
+erase函数：这是删除元素最常用的方法。你可以给它传递一个键，它会删除与这个键对应的元素：
+
+std::map<int, std::string> myMap = {{1, "apple"}, {2, "banana"}, {3, "cherry"}};
+myMap.erase(2);  // 删除键为2的元素
+或者，你也可以给erase传递一个迭代器，它会删除迭代器所指向的元素：
+
+std::map<int, std::string>::iterator it = myMap.find(2);
+if(it != myMap.end()) {
+    myMap.erase(it);  // 删除迭代器指向的元素
+}
+还可以给erase传递一个迭代器范围，它会删除这个范围内的所有元素：
+
+myMap.erase(myMap.begin(), myMap.find(3));  // 删除键小于3的元素
+clear函数：这个函数会删除map中的所有元素：
+
+myMap.clear();
+注意，无论使用哪种方法，删除元素都不会使迭代器失效。只有被删除元素的迭代器会失效，其它元素的迭代器都保持有效。
+
+
+
+-------c++ map 迭代器遍历时删除元素------
+在C++中，如果你正在遍历map的过程中删除元素，需要特别注意，因为删除操作会使指向被删除元素的迭代器失效。
+
+以下是一个正确的示例：
+
+std::map<int, std::string> myMap = {{1, "apple"}, {2, "banana"}, {3, "cherry"}};
+
+for(auto it = myMap.begin(); it != myMap.end(); ) {
+    if(it->first == 2) {
+        it = myMap.erase(it); // erase会返回指向下一个元素的迭代器
+    } else {
+        ++it;
+    }
+}
+在这个例子中，我们在删除元素后立即更新了迭代器it，使它指向下一个元素。erase函数在删除元素后返回一个新的迭代器，这个迭代器指向被删除元素之后的元素。
+
+如果你没有立即更新迭代器，或者试图使用已经删除的元素的迭代器，那么你的程序可能会出现未定义的行为。
+--------------------------------------

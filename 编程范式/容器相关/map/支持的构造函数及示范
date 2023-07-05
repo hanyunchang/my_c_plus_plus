@@ -1,0 +1,33 @@
+在C++中，std::map有以下构造函数及其使用示例：
+
+默认构造函数：
+std::map<int, std::string> map1;
+创建一个空的map。
+
+带比较函数的构造函数：
+std::map<int, std::string, std::greater<int>> map2;
+创建一个空的map，但用比较函数std::greater<int>而不是默认的std::less<int>。
+
+范围构造函数：
+std::vector<std::pair<int, std::string>> vec = {{1, "one"}, {2, "two"}};
+std::map<int, std::string> map3(vec.begin(), vec.end());
+创建一个map，含有来自范围vec.begin()到vec.end()的元素。
+
+初始化列表构造函数：
+std::map<int, std::string> map4 = {{1, "one"}, {2, "two"}};
+用初始化列表中的元素创建一个map。
+
+拷贝构造函数：
+std::map<int, std::string> map5 = map4;
+创建一个新的map作为现有map的复制。
+
+移动构造函数：
+std::map<int, std::string> map6 = std::move(map5);
+创建一个新的map，通过“移动”现有map的所有元素。
+
+移动赋值构造函数：
+std::map<int, std::string> map8;
+map8 = std::move(map7);
+通过“移动”现有map的所有元素来替换现有map的元素。
+
+以上就是std::map支持的所有构造函数及其使用示例。

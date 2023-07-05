@@ -1,0 +1,44 @@
+使用下标操作符[]插入元素。如果键值不存在，则会创建新的键值对，否则会更新已存在的键的值：
+std::map<int, std::string> myMap;
+myMap[1] = "apple";
+myMap[2] = "banana";
+使用insert成员函数插入元素。insert函数会返回一个pair，其first成员是一个迭代器，指向新插入的元素或是已存在的元素，second成员是一个bool值，表示插入是否成功（如果键已存在则插入失败，返回false）：
+std::map<int, std::string> myMap;
+myMap.insert(std::pair<int, std::string>(1, "apple"));
+myMap.insert(std::pair<int, std::string>(2, "banana"));
+//或者
+myMap.insert({1, "apple"});
+myMap.insert({2, "banana"});
+使用emplace成员函数插入元素。这个函数会在容器中直接构造元素，效率比使用insert更高：
+std::map<int, std::string> myMap;
+myMap.emplace(1, "apple");
+myMap.emplace(2, "banana");
+注意：在使用下标操作符[]插入元素时，如果键已存在，则会更新键的值；但在使用insert和emplace插入元素时，如果键已存在，则插入操作会失败，原来的键值对保持不变。
+
+
+--------c++ map emplace插入对象详细用法 ------
+在C++中，std::map::emplace函数用于在容器中直接构造元素，这比使用insert更高效，因为emplace不需要创建临时对象。
+
+emplace函数的参数是要插入元素的构造函数的参数。例如，如果你有一个存储Person对象的map，其中Person的构造函数如下：
+
+class Person {
+public:
+    Person(std::string name, int age);
+    // ...
+};
+你可以这样使用emplace：
+
+std::map<int, Person> people;
+people.emplace(std::piecewise_construct, std::forward_as_tuple(1), 
+               std::forward_as_tuple("John", 25));
+在这个例子中，std::piecewise_construct是一个特殊的tag，它告诉emplace函数要将构造函数的参数分别传递给键和值的构造函数。std::forward_as_tuple则用于创建一个tuple，这个tuple的元素是使用std::forward转发的参数。
+
+这样，emplace就可以直接在map中构造Person对象，而不需要先创建临时对象然后再插入。
+
+另外，如果你的键和值的类型都是内置类型或者只有一个参数的构造函数，那么你可以直接使用emplace，而无需使用std::piecewise_construct和std::forward_as_tuple：
+
+std::map<int, std::string> myMap;
+myMap.emplace(1, "apple");
+myMap.emplace(2, "banana");
+在这个例子中，emplace直接接收键和值的参数，并在map中构造键值对。
+------------------------------------------
