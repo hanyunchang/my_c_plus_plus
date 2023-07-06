@@ -1,0 +1,96 @@
+1. 懒汉模式：mutex + 原子变量
+核心问题1：new 操作符指令重排
+核心问题2：程序退出时自动执行析构函数
+
+class Singleton {
+ public:
+     static Singleton * GetInstance() {
+         Singleton* tmp = _instance.load(std::memory_order_acquire);
+         if (tmp == nullptr) {
+             std::lock_guard<std::mutex> lock(_mutex);
+             tmp = _instance.load(std::memory_order_acquire);
+             if (tmp == nullptr) {
+                 tmp = new Singleton;
+                 _instance.store(tmp, memory_order_release);
+            }
+        }
+         return tmp;
+    }
+
+    class GcBro{
+        public:
+            ~GcBro(){
+                  Singleton * sgtn = Singleton::GetInstance();//这么写的原因是：析构函数的执行顺序无法保证，同时很难确定其他对象的析构函数里是否调用了GetInstance()方法
+                  if(tmp != nullptr){
+                      delete sgtn;
+                  }
+            }
+    };
+ private:
+     // 构造函数和析构函数私有化
+     Singleton(); 
+     ~Singleton();  //禁止用户delete单例，否则线程不安全
+     
+     // 禁掉拷贝构造、拷贝赋值、移动构造、移动赋值
+     Singleton(const Singleton &) = delete;
+     Singleton& operator=(const Singleton&) = delete;
+     Singleton(Singleton &&) = delete; //禁止用户将单例作为右值移动出去，否则线程不安全
+     Singleton& operator=(Singleton &&) = delete; //禁止用户将单例作为右值移动出去，否则线程不安全
+
+     static std::atomic<Singleton*> _instance;
+     static std::mutex _mutex;
+ };
+
+ // 静态成员需要初始化
+ std::atomic<Singleton*> Singleton::_instance; 
+ std::mutex Singleton::_mutex;  
+
+ Singleton::GcBro gcBro;
+
+
+2. 恶汉模式
+class Singleton {
+private:
+    Singleton() {}
+    ~Singleton() {}
+    Singleton(const Singleton&);
+    Singleton& operator=(const Singleton&);
+    static Singleton instance;
+
+public:
+    class GcBro{
+        public:
+            ~GcBro(){
+                  Singleton * sgtn = Singleton::GetInstance();//这么写的原因是：析构函数的执行顺序无法保证，同时很难确定其他对象的析构函数里是否调用了GetInstance()方法
+                  if(tmp != nullptr){
+                      delete sgtn;
+                  }
+            }
+    };
+    static Singleton* getInstance() { return &instance; }
+};
+ // 静态成员需要初始化
+Singleton Singleton::instance;
+Singleton::GcBro gcBro;
+
+
+3. 利用静态局部变量的初始化(线程安全)实现（c++11及以后）
+class Singleton {
+public:
+    static Singleton& getInstance() {
+        static Singleton instance;
+        return instance;
+    }
+
+private:
+    // 构造函数和析构函数私有化
+     Singleton(); 
+     ~Singleton();  //禁止用户delete单例，否则线程不安全
+     
+     // 禁掉拷贝构造、拷贝赋值、移动构造、移动赋值
+     Singleton(const Singleton &) = delete;
+     Singleton& operator=(const Singleton&) = delete;
+     Singleton(Singleton &&) = delete; //禁止用户将单例作为右值移动出去，否则线程不安全
+     Singleton& operator=(Singleton &&) = delete; //禁止用户将单例作为右值移动出去，否则线程不安全
+};
+
