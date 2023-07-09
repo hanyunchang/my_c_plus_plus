@@ -8,12 +8,12 @@
 # 默认拷贝构造函数
 ### 执行分支
 * trival
-  ![image](https://github.com/hanyunchang/my_c_plus_plus/assets/40823439/71f70180-4263-4c89-806b-3b47397646ab)
+![image](https://github.com/hanyunchang/my_c_plus_plus/assets/40823439/71f70180-4263-4c89-806b-3b47397646ab)
 
 * untrival
   * union类型
   * class or struct类型
-  ![image](https://github.com/hanyunchang/my_c_plus_plus/assets/40823439/d414acad-e632-48b2-827e-2b8d7fdc3eeb)
+![image](https://github.com/hanyunchang/my_c_plus_plus/assets/40823439/d414acad-e632-48b2-827e-2b8d7fdc3eeb)
 值的说明的是：
 a. 成员变量是定义好数量的数组的话，是深拷贝
 b. 对成员变量进行拷贝时，忽略访问权限的限制
