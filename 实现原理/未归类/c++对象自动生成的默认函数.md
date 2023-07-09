@@ -6,6 +6,17 @@
 ![Alt text](image-1.png)
 
 # 默认拷贝构造函数
+### 执行分支
+* trival
+  ![image](https://github.com/hanyunchang/my_c_plus_plus/assets/40823439/71f70180-4263-4c89-806b-3b47397646ab)
+
+* untrival
+  * union类型
+  * class or struct类型
+  ![image](https://github.com/hanyunchang/my_c_plus_plus/assets/40823439/d414acad-e632-48b2-827e-2b8d7fdc3eeb)
+值的说明的是：
+a. 成员变量是定义好数量的数组的话，是深拷贝
+b. 对成员变量进行拷贝时，忽略访问权限的限制
 
 
 # 默认析构函数
@@ -20,14 +31,14 @@
 ### 平凡析构函数
 ![Alt text](image-3.png)
 
-
 # 默认重载赋值运算符函数
-
+与拷贝构造函数类似。见链接，不表。
 
 # 默认重载取址运算符函数
-
+见链接，不表
 
 # 默认重载取址运算符const函数
+见链接，不表
 
 
 # 默认移动构造函数（C++11）
@@ -50,4 +61,7 @@
    a. 这里有说什么是placement new : https://en.cppreference.com/w/cpp/language/new#Placement_new
    b. 这里有说delete操作一共是哪两个步骤：https://www.cnblogs.com/zhxmdefj/p/12292669.html
    c. 结合a&b我们可以知道为什么placement new为什么需要手动调用析构函数而不是执行delete操作
+10. https://juejin.cn/post/7023663680671711245(C++：取地址及const取地址操作符重载)
+11. https://en.cppreference.com/w/cpp/language/copy_constructor ( 拷贝构造函数官方文档 )
+12. https://en.cppreference.com/w/cpp/language/copy_assignment( 重载赋值运算符官方文档 )
 
