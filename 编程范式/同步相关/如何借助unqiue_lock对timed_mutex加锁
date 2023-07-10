@@ -1,0 +1,14 @@
+std::unique_lock是一个更加灵活的互斥量包装器，它不仅可以在构造函数中自动获取锁，还可以在其他任何时间手动获取和释放锁。此外，std::unique_lock还支持所有类型的互斥量，包括std::timed_mutex。
+
+使用std::unique_lock和std::timed_mutex时，可以使用try_lock_for或try_lock_until函数尝试在指定时间内获得锁。
+
+例如：
+
+std::timed_mutex tmtx;
+std::unique_lock<std::timed_mutex> ul(tmtx, std::defer_lock);
+if (ul.try_lock_for(std::chrono::seconds(1))) {
+    // 在此区域中，tmtx 被锁定
+    ul.unlock();//这里如果不调用unlock进行手动解锁，在unique_lock析构时也会自动解开
+}
+
+注意: std::defer_lock是一个空结构体，定义在<mutex>头文件中，作为std::unique_lock的构造函数的参数。当我们创建一个std::unique_lock对象时，可以传入一个std::defer_lock参数，这会让std::unique_lock在构造时不会立即锁定互斥量。
