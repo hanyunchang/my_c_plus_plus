@@ -1,0 +1,50 @@
+在C++中，std::thread类是用来管理线程的。创建新线程的方法有很多种，下面是一些常见的方式：
+
+使用函数指针：
+void myFunction() {
+    std::cout << "Hello from thread!\n";
+}
+
+int main() {
+    std::thread t(myFunction);
+    t.join();
+    return 0;
+}
+使用函数对象（即实现了operator()的类的对象）：
+class MyClass {
+public:
+    void operator()() const {
+        std::cout << "Hello from thread!\n";
+    }
+};
+
+int main() {
+    MyClass myObject;
+    std::thread t(myObject);
+    t.join();
+    return 0;
+}
+使用lambda表达式：
+int main() {
+    std::thread t([]() {
+        std::cout << "Hello from thread!\n";
+    });
+    t.join();
+    return 0;
+}
+使用成员函数：
+class MyClass {
+public:
+    void myFunction() {
+        std::cout << "Hello from thread!\n";
+    }
+};
+
+int main() {
+    MyClass myObject;
+    std::thread t(&MyClass::myFunction, &myObject);//&MyClass::myFunction是有参数的，第一个参数就是this指针
+    t.join();
+    return 0;
+}
+这些都是创建新线程的常见方式，你可以根据需要选择最合适的方式。
+

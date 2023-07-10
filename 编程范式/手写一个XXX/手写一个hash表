@@ -1,0 +1,52 @@
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+class HashTable {
+    int currentSize;
+    vector<list<int>> table;
+    void rehash();
+
+public:
+    HashTable() : currentSize(0) {
+        table.resize(1);
+    }
+
+    void insert(int key) {
+        if (++currentSize > table.size()) {
+            rehash();
+        }
+        table[key % table.size()].push_back(key);
+    }
+
+    void deleteItem(int key) {
+        list<int>& l = table[key % table.size()];
+        l.remove(key);
+        --currentSize;
+    }
+
+    void displayHash() {
+        for (int i = 0; i < table.size(); i++) {
+            cout << i;
+            for (auto x : table[i]) {
+                cout << " --> " << x;
+            }
+            cout << endl;
+        }
+    }
+};
+
+void HashTable::rehash() {
+    vector<list<int>> oldTable = table;
+    table.resize(2 * table.size());
+    for (auto& bucket : table) {
+        bucket.clear();
+    }
+    currentSize = 0;
+    for (auto& bucket : oldTable) {
+        for (auto& key : bucket) {
+            insert(key);
+        }
+    }
+}

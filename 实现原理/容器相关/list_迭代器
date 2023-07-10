@@ -1,0 +1,63 @@
+以下是一个简化的C++ list迭代器的实现原理demo：
+
+// 定义链表节点
+template <typename T>
+struct Node {
+    Node* next;
+    Node* prev;
+    T data;
+};
+
+// 定义迭代器
+template <typename T>
+struct Iterator {
+    Node<T>* pNode;
+
+    Iterator(Node<T>* node = nullptr) : pNode(node) {}
+
+    T& operator*() {
+        return pNode->data;
+    }
+
+    Iterator& operator++() {
+        pNode = pNode->next;
+        return *this;
+    }
+
+    Iterator& operator--() {
+        pNode = pNode->prev;
+        return *this;
+    }
+
+    bool operator==(const Iterator& other) {
+        return pNode == other.pNode;
+    }
+
+    bool operator!=(const Iterator& other) {
+        return pNode != other.pNode;
+    }
+};
+
+// 定义链表
+template <typename T>
+class List {
+public:
+    typedef Iterator<T> iterator;
+
+    iterator begin() {
+        return iterator(head);
+    }
+
+    iterator end() {
+        return iterator(nullptr);
+    }
+
+    void push_back(const T& val) {
+        // ... 插入元素到链表尾部
+    }
+
+private:
+    Node<T>* head;
+    Node<T>* tail;
+};
+这个demo中，我们有一个链表节点Node，它有一个指向下一个节点的指针和一个指向上一个节点的指针；一个迭代器Iterator，它有一个指向Node的指针，并定义了一些操作符；一个链表List，它有一个head和一个tail，分别指向链表的头部和尾部，还有一个begin和一个end函数，分别返回指向头部和尾部的迭代器。

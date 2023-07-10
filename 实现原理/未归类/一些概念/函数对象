@@ -1,0 +1,19 @@
+C++中的函数对象（也叫仿函数）其实就是一个类，它重载了operator()运算符。由于它是一个类，所以可以有成员变量和成员函数。
+
+例如：
+
+class Multiply {
+private:
+    int factor; // 成员变量
+public:
+    Multiply(int factor) : factor(factor) {} // 构造函数
+
+    int operator()(int input) { // 重载的operator()运算符
+        return factor * input;
+    }
+};
+在这个例子中，Multiply就是一个函数对象，它有一个成员变量factor，以及一个成员函数operator()。你可以这样使用它：
+
+Multiply multiplyBy2(2);
+int result = multiplyBy2(3); // result为6
+函数对象的优点在于它的状态可以通过成员变量来保存，这使得它比普通函数更加灵活。

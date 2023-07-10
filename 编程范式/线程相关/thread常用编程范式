@@ -1,0 +1,23 @@
+C++11开始引入了std::thread库，它提供了一种面向对象的方式来处理线程。以下是std::thread的一些重要方法：
+
+std::thread()：默认构造函数，创建一个未关联任何函数的线程对象。
+
+std::thread(Function&& func, Args&&... args)：构造函数，创建一个新的执行线程。此线程开始执行func函数，其中args是传递给func的参数。
+
+~std::thread()：析构函数，如果线程对象可连接（joinable），则终止程序。
+
+joinable()：如果线程对象表示活动的执行线程，则返回true。
+
+join()：阻塞当前线程，直到由*this表示的线程完成其执行为止。
+
+detach()：将执行线程与线程对象分离，允许执行独立地继续进行。
+
+swap(std::thread& other)：交换两个线程对象。
+
+native_handle()：返回用于底层实现的平台特定的句柄。
+
+hardware_concurrency()：返回可以并发在一个程序中运行的线程的最大数量。
+
+get_id()：返回线程的id。
+
+注意，std::thread对象本身不具有线程安全性，也就是说，同一时间只能有一个线程访问同一个std::thread对象。

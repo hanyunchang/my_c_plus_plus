@@ -1,0 +1,31 @@
+在C++中，std::function是一个通用、多态的函数封装器。std::function的实例可以存储、复制和调用任何可调用(Callable)目标——函数、Lambda表达式、bind表达式以及其他函数对象等。
+
+例如：
+
+#include <iostream>
+#include <functional>
+
+void foo() {
+    std::cout << "foo() called!" << std::endl;
+}
+
+// 函数对象
+struct Bar {
+    void operator()() {
+        std::cout << "Bar() called!" << std::endl;
+    }
+};
+
+int main() {
+    std::function<void()> f1 = foo;
+    f1();
+
+    Bar bar;
+    std::function<void()> f2 = bar;
+    f2();
+
+    return 0;
+}
+上述代码首先定义了一个名为foo的函数和一个名为Bar的函数对象。然后使用std::function将这两个函数封装，最后分别通过调用f1和f2调用了这两个函数。
+
+std::function最大的优势在于它能够以统一的方式处理所有的“可调用物”，大大增加了代码的灵活性。

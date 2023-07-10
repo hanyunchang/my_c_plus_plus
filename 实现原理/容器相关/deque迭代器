@@ -1,0 +1,37 @@
+deque（double-ended queue）是一个双端队列，可以在两端进行插入和删除操作。在C++中，deque是通过一系列固定大小的数组实现的，这些数组的指针存储在一个map中。
+
+因此，deque的迭代器实现起来比vector复杂一些。它需要包含两个指针：一个指向当前数组，另一个指向当前元素。当迭代器移动时，需要检查是否已经达到当前数组的边界。如果是，就需要移动到map中的下一个数组。
+
+以下是一个简化的deque迭代器的示例：
+
+template<typename T, size_t BufSize>
+class DequeIterator {
+    T** map; // 指向map的指针
+    T* cur; // 指向当前元素的指针
+    T* first; // 指向当前数组的首元素的指针
+    T* last; // 指向当前数组的尾元素的指针
+
+public:
+    DequeIterator(T** m, T* c) : map(m), cur(c) {
+        first = *map;
+        last = first + BufSize;
+    }
+
+    T& operator*() { return *cur; }
+
+    DequeIterator& operator++() {
+        ++cur;
+        if (cur == last) { // 如果达到当前数组的边界，就移动到下一个数组
+            ++map;
+            first = *map;
+            last = first + BufSize;
+            cur = first;
+        }
+        return *this;
+    }
+
+    bool operator!=(const DequeIterator& other) {
+        return cur != other.cur;
+    }
+};
+这个迭代器的实现比vector的迭代器更复杂，主要是因为deque的内存不是连续的，需要额外的逻辑来处理数组之间的跳转。但是，deque的迭代器在deque重新分配内存时仍然有效，因为deque的内存分配是在数组级别进行的，不会影响map中的指针。
