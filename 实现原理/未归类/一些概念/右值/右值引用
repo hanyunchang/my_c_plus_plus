@@ -1,0 +1,34 @@
+见:http://learn.baidu.com/pages/index.html#/video/?courseId=24931&elementId=4a12966e-d1eb-413b-8ffd-faef0dc4d507&userId=6832419&groupId=null&curPlayIndex=0
+
+
+核心说明:
+1. c++ 中提出右值的概念是为了优化性能, 具体的场景是:
+    通常情况下，一个对象的内容被另一个对象复制时，内容实际上被复制了一份。这在涉及到大量数据的对象时，会导致显著的性能开销。通过使用右值引用，我们可以将源对象的内容“移动”到目标对象，而不是创建内容的副本。
+    比如string 函数的拷贝赋值,函数重载了左值和右值引用两种类型,对于参数为右值的逻辑，string会直接交换字符串指针。
+2. std::move可以将一个左值转为一个右值引用
+3. 当我们用一个变量去接右值引用时，这个变量为左值, 比如函数参数为右值类型，但是实际走到函数内部，该变量是一个左值。表明为右值，意味着我们可以破坏该变量。但是如果想继续向下传递右值类型，需要继续std::move（）
+4. 当标记一个变量为右值类型，最大的意义在于告诉程序员，我们可以破坏这个变量
+5. 基于4，一个const的右值引用是很矛盾的，要避免声明这样的变量
+6. 基于1，我们那要根据右值引用和左值引用类型重载不同的方法，如果参数数量很多，那么需要重载的方法指数级增长。为了解决这个问题，于是有了完美转发的概念。
+7. c++中有一些天生的右值，比如表达式，函数返回值。当然我们也可以使用std::move手动生成右值引用
+
+
+
+
+
+参考文献
+1.Klaus lglberger, “Back to Basics: Move Semantics (part 1 of 2)”, CppCon2019.ppt:
+
+https://github.com/CppCon/CppCon2019/blob/master/Presentations/back_to_basics_move_semantics_part_1/back_to_basics_move_semantics_part_1__klaus_iglberger__cppcon_2019.pdf
+
+video: 
+
+https://www.youtube.com/watch?v=St0MNEU5b0o
+
+2.Klaus lglberger, “Back to Basics: Move Semantics (part 2 of 2)”, CppCon2019. ppt:
+
+https://github.com/CppCon/CppCon2019/blob/master/Presentations/back_to_basics_move_semantics_part_2/back_to_basics_move_semantics_part_2__klaus_iglberger__cppcon_2019.pdf
+
+video: 
+
+https://www.youtube.com/watch?v=pIzaZbKUw2s
