@@ -1,30 +1,37 @@
-#include <queue>
 #include <mutex>
 #include <condition_variable>
 
-template <typename T>
-class BlockingQueue {
-private:
-    std::queue<T> queue_;
-    std::mutex mutex_;
-    std::condition_variable condvar_;
+class BlockQueue{
+    public:
+        void push(int ele){
+            std::unique_lock<std::mutex> lck(_mtx);
+			while(size >= 100){ //这里循环检查是为了处理操作系统对线程的的虚假唤醒
+				_not_full_cv.wait(lck);
+			}
 
-public:
-    BlockingQueue() {}
+			_queue.push_back(ele);
+			size++;
+			//这里notify_one就可以, 可以理解为n个push和pop操作, 他们一定是串行执行的,无论是什么排列组合, 最终数据都会被正常消费
+			_not_empty_cv.notify_one();
+		}
 
-    void push(T const& value) {
-        {
-            std::unique_lock<std::mutex> lock(this->mutex_);
-            queue_.push(value);
-        }
-        this->condvar_.notify_one();
-    }
+		int pop(){
+            std::unique_lock<std::mutex> lck(_mtx);
+            while(_queue.empty()){ //这里循环检查是为了处理操作系统对线程的的虚假唤醒
+                _not_empty_cv.wait(lck);
+            }
 
-    T pop() {
-        std::unique_lock<std::mutex> lock(this->mutex_);
-        this->condvar_.wait(lock, [this]{ return !this->queue_.empty(); });
-        T rc(std::move(this->queue_.front()));
-        this->queue_.pop();
-        return rc;
-    }
+			int ret = _queue.front();
+			_queue.pop();
+			//这里notify_one就可以, 可以理解为n个push和pop操作, 他们一定是串行执行的,无论是什么排列组合, 最终数据都会被正常消费
+			_not_full_cv.notify_one();
+			return ret;
+		}
+
+	private:
+	    std::mutex _mtx;
+		queue<int> _que;
+		int max_size = 100;
+		stdx::condition_variable _not_full_cv;
+		stdx::condition_variable _not_empty_cv;
 };
