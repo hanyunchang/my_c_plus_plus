@@ -43,14 +43,15 @@ class HashTable{
             //先交换
             std::vector<std::list<int>> tmp;
             _table.swap(tmp);//记住这个api
+			_size = 0;
+			_thread_hold = 0.0;
             _table = std::vector<std::list<int>>(new_size, std::list<int>());
             for(auto& list : _table) {
                 for(auto& ele : list){
                     insert(ele);
                 }
             }
-            _thread_hold = _size / _table.size();
-        }       
+    }       
     private:
         std::vector<std::list<int>> _table;
         static const double MAX_THREHOLD = 0.8;
