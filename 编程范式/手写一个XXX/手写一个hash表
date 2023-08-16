@@ -1,6 +1,6 @@
+```
 #include <functional>
-#include <list>
-#include <vector>
+
 
 class HashTable{
     public:
@@ -56,3 +56,4 @@ class HashTable{
 		double _thread_hold = 0.0;
 		int _size = 0;
 };
+```
