@@ -1,59 +1,62 @@
 ```
 #include <functional>
+#include <list>
+#include <vector>
 
 
 class HashTable{
     public:
-	    HashTable() {
-			_table = std::vector<std::list<int>>(1, std::list<int>());
-		}
+        HashTable() {
+            _table = std::vector<std::list<int>>(1, std::list<int>());
+        }
         void insert(int ele){
-			if(_thread_hold >= MAX_THREHOLD){
-				rehash(_table.size() * 2);
-			}
+            if(_thread_hold >= MAX_THREHOLD){
+                rehash(_table.size() * 2);
+            }
             auto hash = std::hash<int>(ele);
-			auto& current_list = _table[hash % _table.size()];
+            auto& current_list = _table[hash % _table.size()];
             current_list.push_back(ele);
-			_size++;
-			_thread_hold = _size / _table.size();
-		}
+            _size++;
+            _thread_hold = _size / _table.size();
+        }
 
-		void erase(int ele){
+        void erase(int ele){
             auto hash = std::hash<int>(ele);
-			auto& current_list = _table[hash % _table.size()];
-			current_list.remove(ele);//记住这个api
-			_size--;
-			_thread_hold = _size / _table.size();
+            auto& current_list = _table[hash % _table.size()];
+            current_list.remove(ele);//记住这个api
+            _size--;
+            _thread_hold = _size / _table.size();
             if(_thread_hold <= MIN_THREHOLD && _table_size > 1){
-				rehash(_table.size() / 2);
-			}
-		}
+                rehash(_table.size() / 2);
+            }
+        }
 
-		bool exist(int ele) {
+        bool exist(int ele) {
             auto hash = std::hash<int>(ele);
-			auto& current_list = _table[hash % _table.size()];
-			auto it = current_list.find(ele);//记住这个api
-			return it != current_list.end();
-		}
+            auto& current_list = _table[hash % _table.size()];
+            auto it = current_list.find(ele);//记住这个api
+            return it != current_list.end();
+        }
 
     private:
-	    void rehash(int new_size) {
-			//先交换
-			std::vector<std::list<int>> tmp;
-			_table.swap(tmp);//记住这个api
-			_table = std::vector<std::list<int>>(new_size, std::list<int>());
+        void rehash(int new_size) {
+            //先交换
+            std::vector<std::list<int>> tmp;
+            _table.swap(tmp);//记住这个api
+            _table = std::vector<std::list<int>>(new_size, std::list<int>());
             for(auto& list : _table) {
-				for(auto& ele : list){
+                for(auto& ele : list){
                     insert(ele);
-				}
+                }
             }
-			_thread_hold = _size / _table.size();
-		}		
-	private:
-	    std::vector<std::list<int>> _table;
-		static const double MAX_THREHOLD = 0.8;
-		static const double MIN_THREHOLD = 0.2;
-		double _thread_hold = 0.0;
-		int _size = 0;
+            _thread_hold = _size / _table.size();
+        }       
+    private:
+        std::vector<std::list<int>> _table;
+        static const double MAX_THREHOLD = 0.8;
+        static const double MIN_THREHOLD = 0.2;
+        double _thread_hold = 0.0;
+        int _size = 0;
 };
+
 ```
