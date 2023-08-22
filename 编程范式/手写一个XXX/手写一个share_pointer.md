@@ -29,7 +29,7 @@ public:
             return *this;
         }
 
-        if(_count->load(memory_order_acquire) == 1) {
+        if(_count->load(memory_order_acquire) == 1) { //自己之前的引用计数如果自减后为0，那么需要释放资源
             delete _data;
             delete _count;
         }
