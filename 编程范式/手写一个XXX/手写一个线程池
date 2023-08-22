@@ -1,81 +1,84 @@
-#include <vector>
+```
 #include <queue>
-#include <atomic>
-#include <future>
+#include <mutex>
+#include <condition_variable>
 #include <thread>
-#include <functional>
-#include <stdexcept>
+#include <atomic>     
+   
+
+class Task{
+public:
+    virtual void run(){
+    }
+};
+
+class BlockedQueue{
+public:
+    BlockedQueue(int que_capacity) : _que_capacity(que_capacity) { }
+    void push(Task* task){
+        unique_lock<mutex> lck(_mtx);
+        while(_que.size() >= _que_capacity) {
+            _not_full.wait(lck);
+        }
+
+        _que.push(task);
+        _not_empty.notify_one();
+    }
+
+    Task* pop() {
+        unique_lock<mutex> lck(_mtx);
+        while(_que.size() == 0) {
+            _not_empty.wait(lck);
+        }
+        
+        Task* task = _que.back();
+        _que.pop();
+        _not_full.notify_one();
+        return task;
+    }
+private:
+    queue<Task*> _que;
+    int _que_capacity;
+    mutex _mtx;
+    condition_variable _not_empty;
+    condition_variable _not_full;
+};
+
+void thread_func(BlockedQueue* task_queue, atomic<bool>* _should_stop_flag) {
+    while(!_should_stop_flag) {
+        Task* task = task_queue->pop();
+        task->run();
+        delete task;
+    }
+}
 
 class ThreadPool {
 public:
-    ThreadPool(size_t);
-    template<class F, class... Args>
-    auto enqueue(F&& f, Args&&... args) 
-        -> std::future<typename std::result_of<F(Args...)>::type>;
-    ~ThreadPool();
+    ThreadPool(int thread_num, int task_que_capacity) {
+        _task_que = new BlockedQueue(task_que_capacity);
+        while(thread_num > 0) {
+            thread t(thread_func, _task_que, &_should_stop_flag);
+            _threads.push_back(t);
+            thread_num--;
+        }
+    }
+
+    ~ThreadPool() {
+        _should_stop_flag = true;
+        for(auto th : _threads) {
+            th.join();
+        }
+        delete _task_que;
+        _task_que = nullptr;
+    }
+    void add_task(Task* task) {
+        _task_que->push(task);
+    }
+
+
 private:
-    std::vector< std::thread > workers;
-    std::queue< std::function<void()> > tasks;
-    std::mutex queue_mutex;
-    std::condition_variable condition;
-    bool stop;
+    atomic<bool> _should_stop_flag = false;
+    vector<thread> _threads;
+    BlockedQueue* _task_que = nullptr;
 };
-
-inline ThreadPool::ThreadPool(size_t threads): stop(false)
-{
-    for(size_t i = 0;i<threads;++i)
-        workers.emplace_back(
-            [this]
-            {
-                for(;;)
-                {
-                    std::function<void()> task;
-                    {
-                        std::unique_lock<std::mutex> lock(this->queue_mutex);
-                        this->condition.wait(lock,
-                            [this]{ return this->stop || !this->tasks.empty(); });
-                        
-                        if(this->stop)
-                            return;
-                        if(this->tasks.empty())
-                            continue;
-
-                        task = std::move(this->tasks.front());
-                        this->tasks.pop();
-                    }
-                    task();
-                }
-            }
-        );
-}
-
-template<class F, class... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args) 
-    -> std::future<typename std::result_of<F(Args...)>::type> //这块用法没看懂
-{
-    using return_type = typename std::result_of<F(Args...)>::type;
-    auto task = std::make_shared< std::packaged_task<return_type()> >(
-            std::bind(std::forward<F>(f), std::forward<Args>(args)...)
-        );
-        
-    std::future<return_type> res = task->get_future(); //这块用法没看懂
-    {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        if(stop)
-            throw std::runtime_error("enqueue on stopped ThreadPool");
-        tasks.emplace([task](){ (*task)(); });
-    }
-    condition.notify_one();
-    return res;
-}
-
-inline ThreadPool::~ThreadPool()
-{
-    {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        stop = true;
-    }
-    condition.notify_all();
-    for(std::thread &worker: workers)
-        worker.join();
-}
+```
